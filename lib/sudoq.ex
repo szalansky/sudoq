@@ -6,7 +6,7 @@ defmodule Sudoq do
   def cross(rows, cols) do
     for r <- rows, c <- cols, do: [r] ++ [c]
   end
-  
+
   def unit_list do
     (for c <- @cols, do: cross(@rows, [c])) ++
     (for r <- @rows, do: cross([r], @cols)) ++
@@ -18,9 +18,9 @@ defmodule Sudoq do
 
     for sq <- cross(@rows, @cols) do
       { sq, (for u <- un, sq in u, do: u) |> Enum.reduce([], fn(a, acc) -> acc ++ a end)}
-    end |> Enum.into(HashDict.new)      
+    end |> Enum.into(HashDict.new)
   end
-  
+
   def peers do
     un = units
 
@@ -43,9 +43,15 @@ defmodule Sudoq do
     values = for digit <- game, digit in @digits or digit in '0.', do: [digit]
     Enum.zip(cross(@rows, @cols), values) |> Enum.into(HashDict.new)
   end
-  
-  def assign(grid, sq, digit) do
 
+  def search(grid) do
+
+  end
+
+  def assign(grid, sq, digit) do
+    # Unlike Mr Norvig, I assign a given digit to a cell and eliminate it from others.
+    # This fits immutable data structures world better.
+    Dict.put(grid, sq, digit) |> eliminate(sq, digit)
   end
 
   def eliminate(grid, sq, digit) do
